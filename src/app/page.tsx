@@ -16,7 +16,7 @@ export default function LandingPage() {
         <Button asChild variant="secondary" size="lg">
           <Link href="/signup">Comece Agora - É Grátis!</Link>
         </Button>
-        <Button asChild variant="outline" size="lg">
+        <Button asChild size="lg">
           <Link href="/login">Já tem uma conta? Faça Login</Link>
         </Button>
       </div>
