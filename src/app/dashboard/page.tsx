@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 import { verifyToken } from "@/server/services/auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { getFinancialData } from "@/server/services/financialService";
+import { getLancamentos } from "@/server/services/financialService";
 
 export default async function DashboardPage() {
   const cookieStore = await cookies();
@@ -13,7 +13,8 @@ export default async function DashboardPage() {
     return <div>Não autorizado</div>;
   }
 
-  const financialData = await getFinancialData(userData.id);
+  const financialData = (await getLancamentos(userData.id, new Date())) ?? [];
+  console.log("Lancamentos:", financialData);
 
   return (
     <div className="p-8">
@@ -30,7 +31,7 @@ export default async function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              R$ {financialData.totalRevenues.toFixed(2)}
+              R$ {financialData.totalReceitas.toFixed(2)}
             </div>
           </CardContent>
         </Card>
@@ -42,7 +43,7 @@ export default async function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              R$ {financialData.totalExpenses.toFixed(2)}
+              R$ {financialData.totalDespesas.toFixed(2)}
             </div>
           </CardContent>
         </Card>
@@ -52,7 +53,7 @@ export default async function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              R$ {financialData.totalPaid.toFixed(2)}
+              R$ {financialData.totalPago.toFixed(2)}
             </div>
           </CardContent>
         </Card>
@@ -62,7 +63,7 @@ export default async function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              R$ {financialData.totalToPay.toFixed(2)}
+              R$ {financialData.totalPagar.toFixed(2)}
             </div>
           </CardContent>
         </Card>

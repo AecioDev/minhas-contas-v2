@@ -6,7 +6,7 @@ import { prisma } from "@/lib/prisma";
 const JWT_SECRET = process.env.JWT_SECRET!;
 
 interface UserData {
-  id: string;
+  id: number;
   email: string;
   role: string;
 }

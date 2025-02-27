@@ -8,39 +8,70 @@ datasource db {
 }
 
 model User {
-  id        String    @id @default(cuid())
-  name      String
-  email     String    @unique
-  password  String
-  phone     String?
-  role      String    @default("user")
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  expenses  Expense[]
-  revenues  Revenue[]
+  id          Int           @id @default(autoincrement())
+  name        String
+  email       String        @unique
+  password    String
+  phone       String?
+  role        String        @default("user")
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  Lancamentos Lancamentos[]
 }
 
-model Expense {
-  id          String   @id @default(cuid())
-  description String
-  amount      Float
-  dueDate     DateTime
-  paidAt      DateTime?
-  userId      String
-  user        User     @relation(fields: [userId], references: [id])
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+model Categoria {
+  id        Int      @id @default(autoincrement())
+  descricao String
+  tipo      String // Receita ou Despesa
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  eventos   Evento[]
 }
 
-model Revenue {
-  id          String   @id @default(cuid())
-  description String
-  amount      Float
-  receiveDate DateTime
-  receivedAt  DateTime?
-  userId      String
-  user        User     @relation(fields: [userId], references: [id])
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+model Evento {
+  id          Int           @id @default(autoincrement())
+  descricao   String
+  categoryId  Int
+  category    Categoria     @relation(fields: [categoryId], references: [id])
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  lancamentos Lancamentos[]
 }
 
+model Lancamentos {
+  id        Int      @id @default(autoincrement())
+  data      DateTime @default(now())
+  eventosId Int
+  evento    Evento   @relation(fields: [eventosId], references: [id])
+  valor     Float
+  status    Boolean  @default(false) // Pago ou não
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+/**
+ * model Expense {
+ * id          String   @id @default(cuid())
+ * description String
+ * amount      Float
+ * dueDate     DateTime
+ * paidAt      DateTime?
+ * userId      String
+ * user        User     @relation(fields: [userId], references: [id])
+ * createdAt   DateTime @default(now())
+ * updatedAt   DateTime @updatedAt
+ * }
+ * model Revenue {
+ * id          String   @id @default(cuid())
+ * description String
+ * amount      Float
+ * receiveDate DateTime
+ * receivedAt  DateTime?
+ * userId      String
+ * user        User     @relation(fields: [userId], references: [id])
+ * createdAt   DateTime @default(now())
+ * updatedAt   DateTime @updatedAt
+ * }
+ */

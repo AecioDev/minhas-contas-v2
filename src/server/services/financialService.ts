@@ -1,62 +1,62 @@
 import { prisma } from "@/lib/prisma";
-import type { Expense, Revenue } from "@prisma/client";
 
-interface FinancialData {
-  totalExpenses: number;
-  totalRevenues: number;
-  totalPaid: number;
-  totalToPay: number;
+interface LancamentosData {
+  totalDespesas: number;
+  totalReceitas: number;
+  totalPago: number;
+  totalPagar: number;
 }
 
-export async function getFinancialData(userId: string): Promise<FinancialData> {
-  const [expenses, revenues] = await Promise.all([
-    prisma.expense.findMany({
-      where: { userId },
-    }),
-    prisma.revenue.findMany({
-      where: { userId },
-    }),
-  ]);
+//export async function getLancamentos(userId: number, data: Date)  {
+export async function getLancamentos(
+  userId: number,
+  data: Date
+): Promise<LancamentosData> {
+  const ano = data.getFullYear();
+  const mes = data.getMonth() + 1; // getMonth() retorna um índice de 0 a 11, então somamos 1
 
-  const totalExpenses = expenses.reduce(
-    (acc: number, expense: Expense) => acc + expense.amount,
-    0
+  const lancamentos = await prisma.lancamentos.findMany({
+    where: {
+      userId: userId, // Convertendo para número, caso necessário
+      data: {
+        gte: new Date(ano, mes - 1, 1), // Primeiro dia do mês
+        lt: new Date(ano, mes, 1), // Primeiro dia do próximo mês
+      },
+    },
+    include: {
+      evento: {
+        include: {
+          category: true, // Inclui a categoria do evento, se necessário
+        },
+      },
+    },
+  });
+
+  const despesas = lancamentos.filter(
+    (lancamento) => lancamento.evento.category.tipo === "Despesa"
   );
 
-  const totalRevenues = revenues.reduce(
-    (acc: number, revenue: Revenue) => acc + revenue.amount,
-    0
+  const receitas = lancamentos.filter(
+    (lancamento) => lancamento.evento.category.tipo === "Receita"
   );
 
-  const totalPaid = expenses
-    .filter(
-      (expense: Expense): expense is Expense & { paidAt: Date } =>
-        expense.paidAt !== null
-    )
-    .reduce(
-      (acc: number, expense: Expense & { paidAt: Date }) =>
-        acc + expense.amount,
-      0
-    );
-
-  const totalToPay = totalExpenses - totalPaid;
+  const totalDespesas = despesas.reduce(
+    (acc, despesa) => acc + despesa.valor,
+    0
+  );
+  const totalReceitas = receitas.reduce(
+    (acc, receita) => acc + receita.valor,
+    0
+  );
+  const totalPago = despesas
+    .filter((despesa) => despesa.status)
+    .reduce((acc, despesa) => acc + despesa.valor, 0);
+  const totalPagar = totalDespesas - totalPago;
 
   return {
-    totalExpenses,
-    totalRevenues,
-    totalPaid,
-    totalToPay,
+    totalDespesas,
+    totalReceitas,
+    totalPago,
+    totalPagar,
   };
-}
-
-export async function getExpenses(userId: string): Promise<Expense[]> {
-  return prisma.expense.findMany({
-    where: { userId },
-  });
-}
-
-export async function getRevenues(userId: string): Promise<Revenue[]> {
-  return prisma.revenue.findMany({
-    where: { userId },
-  });
 }
