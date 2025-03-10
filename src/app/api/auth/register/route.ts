@@ -1,23 +1,44 @@
 import { NextResponse } from "next/server";
-import { createUser } from "@/server/services/auth";
+import { hash } from "bcryptjs";
+import { prisma } from "@/lib/prisma";
 
-export async function POST(request: Request) {
+export async function POST(req: Request) {
   try {
-    const userData = await request.json();
-    const user = await createUser(userData);
+    const body = await req.json();
+    const { name, email, password, phone, role } = body;
 
-    return NextResponse.json(user);
-  } catch (error: any) {
-    if (error.code === "P2002") {
+    // Verifica se o usuário já existe
+    const existingUser = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (existingUser) {
       return NextResponse.json(
-        { error: "Email already exists" },
+        { message: "Usuário já cadastrado" },
         { status: 400 }
       );
     }
 
-    console.error("Registration error:", error);
+    // Hash da senha
+    const hashedPassword = await hash(password, 12);
+
+    // Criação do usuário
+    const user = await prisma.user.create({
+      data: {
+        name,
+        email,
+        password: hashedPassword,
+        phone,
+        role,
+      },
+      select: { id: true, name: true, email: true, role: true },
+    });
+
+    return NextResponse.json(user, { status: 201 });
+  } catch (error) {
+    console.error("Erro ao registrar usuário:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { message: "Erro interno do servidor" },
       { status: 500 }
     );
   }

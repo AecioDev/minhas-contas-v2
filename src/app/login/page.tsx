@@ -11,6 +11,8 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "@/hooks/use-toast";
 import { CircleDollarSign } from "lucide-react";
+import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -36,35 +38,33 @@ export default function LoginPage() {
   };
 
   return (
-    <div
-      className="min-h-screen flex items-center justify-center bg-cover bg-center bg-black opacity-90"
-      style={{
-        backgroundImage: "url('/bg_login.jpg')",
-      }}
-    >
-      <div className="bg-transparent p-8 rounded-lg shadow-md w-96 border-2 border-border">
-        <div className="flex items-center justify-center text-4xl text-secondary mb-4">
-          <CircleDollarSign size={32} className="mr-2" />
-          <h1 className="font-bold">Minhas Contas</h1>
+    <div className="min-h-screen bg-gradient-to-r from-blue-500 to-purple-600 flex flex-col justify-center items-center text-white">
+      <div className="flex items-center justify-center text-4xl text-secondary mb-4">
+        <CircleDollarSign size={34} className="mr-2 text-white " />
+        <h1 className="text-white font-bold">Minhas Contas</h1>
+      </div>
+      <div className="bg-slate-200 p-8 rounded-lg shadow-md w-96 border-2 border-violet-700">
+        <div className="flex items-center justify-center text-2xl text-secondary mb-4">
+          <h2 className="text-gray-800 font-bold">Login</h2>
         </div>
         <form onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div>
-              <Label className="text-muted" htmlFor="email">
+              <Label className="text-gray-800" htmlFor="email">
                 Email
               </Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="seu@email.com"
+                placeholder="informe_seu@email.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="text-muted bg-gray-700 "
                 required
+                className="text-black"
               />
             </div>
             <div>
-              <Label className="text-muted" htmlFor="password">
+              <Label className="text-gray-800" htmlFor="password">
                 Senha
               </Label>
               <Input
@@ -73,11 +73,14 @@ export default function LoginPage() {
                 placeholder="********"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="text-muted bg-gray-700 "
                 required
+                className="text-black"
               />
             </div>
-            <Button type="submit" className="w-full hover:bg-slate-700">
+            <Button
+              type="submit"
+              className="w-full text-white bg-gradient-to-r from-blue-500 to-purple-600 border border-violet-700 hover:bg-violet-500"
+            >
               Entrar
             </Button>
           </div>
@@ -90,13 +93,13 @@ export default function LoginPage() {
               checked={rememberMe}
               onCheckedChange={(checked) => setRememberMe(checked as boolean)}
             />
-            <Label className="text-muted text-sm" htmlFor="rememberMe">
+            <Label className="text-gray-800 text-sm" htmlFor="rememberMe">
               Lembrar-me
             </Label>
           </div>
           <Link
             href="/signup"
-            className="text-sm text-muted font-semibold hover:text-blue-600 hover:underline"
+            className="text-sm text-gray-800 font-semibold hover:text-blue-600 hover:underline"
           >
             Criar uma conta
           </Link>

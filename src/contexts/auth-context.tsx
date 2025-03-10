@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 
 interface User {
   id: string;
+  name: string;
   email: string;
   role: string;
 }
@@ -57,6 +58,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       const userData = await response.json();
+      //console.log("User: ", userData);
       setUser(userData);
       router.push("/dashboard");
     } catch (error) {

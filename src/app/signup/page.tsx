@@ -1,42 +1,77 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import Image from "next/image"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { CircleDollarSign } from "lucide-react";
 
 export default function SignUpPage() {
-  const [name, setName] = useState("")
-  const [phone, setPhone] = useState("")
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [role, setRole] = useState("")
-  const router = useRouter()
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confPassword, setConfPassword] = useState("");
+  const [role, setRole] = useState("");
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    // Aqui você implementaria a lógica de cadastro
-    console.log("Sign up attempt", { name, phone, email, password, role })
-    // Se o cadastro for bem-sucedido, redirecione para o login
-    router.push("/login")
-  }
+    e.preventDefault();
+
+    setRole("admin");
+
+    if (password !== confPassword) {
+      alert("As senhas não coincidem!");
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+          phone,
+          role,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Erro ao cadastrar usuário.");
+      }
+
+      alert("Cadastro realizado com sucesso!");
+      router.push("/login"); // Redireciona para a página de login
+    } catch (error) {
+      console.error("Erro ao cadastrar:", error);
+      alert("Ocorreu um erro. Tente novamente.");
+    }
+  };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-md w-96">
-        <div className="flex justify-center mb-6">
-          <Image src="/placeholder.svg?height=100&width=100" alt="Logo" width={100} height={100} />
+    <div className="min-h-screen bg-gradient-to-r from-blue-500 to-purple-600 flex flex-col justify-center items-center text-white">
+      <div className="flex items-center justify-center text-4xl text-secondary mb-4">
+        <CircleDollarSign size={34} className="mr-2 text-white " />
+        <h1 className="text-white font-bold">Minhas Contas</h1>
+      </div>
+      <div className="bg-slate-200 p-8 rounded-lg shadow-md w-96 border-2 border-violet-700">
+        <div className="flex items-center justify-center text-2xl text-secondary mb-4">
+          <h2 className="font-bold">Login</h2>
         </div>
         <form onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div>
-              <Label htmlFor="name">Nome</Label>
+              <Label className="text-gray-800" htmlFor="name">
+                Nome
+              </Label>
               <Input
                 id="name"
                 type="text"
@@ -47,18 +82,9 @@ export default function SignUpPage() {
               />
             </div>
             <div>
-              <Label htmlFor="phone">Telefone</Label>
-              <Input
-                id="phone"
-                type="tel"
-                placeholder="(00) 00000-0000"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                required
-              />
-            </div>
-            <div>
-              <Label htmlFor="email">Email</Label>
+              <Label className="text-gray-800" htmlFor="email">
+                Email
+              </Label>
               <Input
                 id="email"
                 type="email"
@@ -68,30 +94,51 @@ export default function SignUpPage() {
                 required
               />
             </div>
-            <div>
-              <Label htmlFor="password">Senha</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="********"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label className="text-gray-800" htmlFor="password">
+                  Senha
+                </Label>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="********"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
+              <div>
+                <Label className="text-gray-800" htmlFor="password">
+                  Confirmar Senha
+                </Label>
+                <Input
+                  id="confPassword"
+                  type="password"
+                  placeholder="********"
+                  value={confPassword}
+                  onChange={(e) => setConfPassword(e.target.value)}
+                  required
+                />
+              </div>
+              <div>
+                <Label className="text-gray-800" htmlFor="phone">
+                  Telefone
+                </Label>
+                <Input
+                  id="phone"
+                  type="tel"
+                  placeholder="(00) 00000-0000"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  required
+                />
+              </div>
             </div>
-            <div>
-              <Label htmlFor="role">Papel</Label>
-              <Select onValueChange={(value) => setRole(value)} required>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione um papel" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="user">Usuário</SelectItem>
-                  <SelectItem value="admin">Administrador</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <Button type="submit" className="w-full">
+            <Button
+              type="submit"
+              className="w-full text-white bg-gradient-to-r from-blue-500 to-purple-600 border border-violet-700 hover:bg-violet-500"
+            >
               Cadastrar
             </Button>
           </div>
@@ -103,6 +150,5 @@ export default function SignUpPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }
-

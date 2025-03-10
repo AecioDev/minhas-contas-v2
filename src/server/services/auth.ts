@@ -46,6 +46,7 @@ export const validateUser = async (email: string, password: string) => {
 
   return {
     id: user.id,
+    name: user.name,
     email: user.email,
     role: user.role,
   };
@@ -70,7 +71,8 @@ export const setAuthCookie = async (token: string) => {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "strict",
-    maxAge: 60 * 60, // 1 hora
+    path: "/", // Disponível em todas as páginas
+    maxAge: 60 * 60 * 24, // Expira em 1 dia
   });
 };
 

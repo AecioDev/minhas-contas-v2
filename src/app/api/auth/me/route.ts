@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { verifyToken } from "@/server/services/auth";
 
 export async function GET() {
-  const cookieStore = await cookies(); // Agora cookies() não precisa de await
+  const cookieStore = await cookies();
 
   const token = cookieStore.get("token")?.value;
 

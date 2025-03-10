@@ -51,7 +51,16 @@ MINHAS-CONTAS
     public
     src
         app
-            api
+            api/auth
+                login
+                    route.ts
+                logout
+                    route.ts
+                me
+                    route.ts
+                register
+                    route.ts
+            dashboard
             login
             signup
             favicon.ico

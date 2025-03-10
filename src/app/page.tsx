@@ -1,7 +1,19 @@
+import { cookies } from "next/headers";
+import { verifyToken } from "@/server/services/auth";
+import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value;
+  const userData = token ? verifyToken(token) : null;
+
+  // Sempre adicionar este trecho em páginas que precisam de autenticação
+  if (userData) {
+    redirect("/dashboard");
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-r from-blue-500 to-purple-600 flex flex-col justify-center items-center text-white">
       <h1 className="text-5xl font-bold mb-4">
