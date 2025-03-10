@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CircleDollarSign } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 export default function SignUpPage() {
   const [name, setName] = useState("");
@@ -18,6 +19,7 @@ export default function SignUpPage() {
   const [confPassword, setConfPassword] = useState("");
   const [role, setRole] = useState("");
   const router = useRouter();
+  const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,7 +27,11 @@ export default function SignUpPage() {
     setRole("admin");
 
     if (password !== confPassword) {
-      alert("As senhas não coincidem!");
+      toast({
+        variant: "destructive",
+        title: "Erro de validação",
+        description: "As senhas não coincidem!",
+      });
       return;
     }
 
@@ -45,14 +51,30 @@ export default function SignUpPage() {
       });
 
       if (!response.ok) {
-        throw new Error("Erro ao cadastrar usuário.");
+        toast({
+          variant: "destructive",
+          title: "Erro no cadastro",
+          description: "Erro ao cadastrar usuário.",
+        });
       }
 
-      alert("Cadastro realizado com sucesso!");
-      router.push("/login"); // Redireciona para a página de login
+      toast({
+        title: "Cadastro realizado com sucesso!",
+        description:
+          "Você será redirecionado para a página de login em 3 segundos.",
+      });
+
+      // Redirecionar após 3 segundos
+      setTimeout(() => {
+        router.push("/login");
+      }, 3000);
     } catch (error) {
       console.error("Erro ao cadastrar:", error);
-      alert("Ocorreu um erro. Tente novamente.");
+      toast({
+        variant: "destructive",
+        title: "Erro no cadastro",
+        description: "Ocorreu um erro. Tente novamente.",
+      });
     }
   };
 
